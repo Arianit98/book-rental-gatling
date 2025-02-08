@@ -19,21 +19,21 @@ public class CostumerSimulation extends Simulation {
 
   private ScenarioBuilder scn = scenario("CostumerSimulation")
     .exec(
-      http("Get all costumers:GET_http://localhost:8080/api/v1/costumers")
+      http("Get all costumers")
         .get("/api/v1/costumers"),
       pause(5),
-      http("Get costumer with id 2:GET_http://localhost:8080/api/v1/costumers/2")
+      http("Get costumer with id 2")
         .get("/api/v1/costumers/2"),
       pause(5),
-      http("Update costumer with id 3:PUT_http://localhost:8080/api/v1/costumers/3")
+      http("Update costumer with id 3")
         .put("/api/v1/costumers/3")
         .body(RawFileBody("0002_request.json")),
       pause(8),
-      http("Create costumer:POST_http://localhost:8080/api/v1/costumers")
+      http("Create costumer")
         .post("/api/v1/costumers")
         .body(RawFileBody("0003_request.json")),
       pause(5),
-      http("Delete costumer:DELETE_http://localhost:8080/api/v1/costumers/1")
+      http("Delete costumer")
         .delete("/api/v1/costumers/1")
     );
 
