@@ -31,7 +31,7 @@ public class CostumerSimulation extends Simulation {
       pause(8),
       http("Create costumer")
         .post("/api/v1/costumers")
-        .body(RawFileBody("0003_request.json")),
+        .body(RawFileBody("create_reservation_1.json")),
       pause(5),
       http("Delete costumer")
         .delete("/api/v1/costumers/1")
