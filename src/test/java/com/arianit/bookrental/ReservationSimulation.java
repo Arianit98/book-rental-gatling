@@ -43,16 +43,16 @@ public class ReservationSimulation extends Simulation {
               .body(StringBody(session -> {
                 int costumerId = session.getInt("costumerId");
                 int bookId = session.getInt("bookId");
-                String test = String.format("{\"costumerId\": %d, \"bookId\": %d, \"createdDate\": \"10.02.2024\", \"durationInDays\": 4}", costumerId, bookId);
-                return test;
+                  return String.format("{\"costumerId\": %d, \"bookId\": %d, \"createdDate\": \"10.02.2024\", \"durationInDays\": 4}", costumerId, bookId);
               })).check(jsonPath("$.id").saveAs("reservationId")),
       pause(17),
       http("Update reservation")
-        .put("/api/v1/reservations/#{reservationId}")
+        .put("/api/v1/reservations")
         .body(StringBody(session -> {
+            int reservationId = session.getInt("reservationId");
           int costumerId = session.getInt("costumerId");
           int bookId = session.getInt("bookId");
-          return String.format("{\"costumerId\": %d, \"bookId\": %d, \"createdDate\": \"10.02.2024\", \"durationInDays\": 4}", costumerId, bookId);
+          return String.format("{\"id\": %d,\"costumerId\": %d, \"bookId\": %d, \"createdDate\": \"10.02.2024\", \"durationInDays\": 4}", reservationId, costumerId, bookId);
         })),
       pause(8),
       http("Get reservation")

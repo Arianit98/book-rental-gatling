@@ -5,6 +5,7 @@ import io.gatling.javaapi.core.Simulation;
 import io.gatling.javaapi.http.HttpProtocolBuilder;
 
 import static io.gatling.javaapi.core.CoreDsl.*;
+import static io.gatling.javaapi.http.HttpDsl.header;
 import static io.gatling.javaapi.http.HttpDsl.http;
 
 public class BookSimulation extends Simulation {
@@ -23,19 +24,31 @@ public class BookSimulation extends Simulation {
                     http("Get all books")
                             .get("/api/v1/books"),
                     pause(5),
-                    http("Get book with id 2")
-                            .get("/api/v1/books/2"),
-                    pause(5),
-                    http("Update book with id 3")
-                            .put("/api/v1/books/3")
-                            .body(RawFileBody("update_book.json")),
-                    pause(8),
                     http("Create book")
                             .post("/api/v1/books")
-                            .body(RawFileBody("create_book.json")),
+                            .body(RawFileBody("create_book.json"))
+                            .check(header("Location").saveAs("locationHeader")),
+                    pause(5)
+            )
+            .exec(session -> {
+                String location = session.getString("locationHeader");
+                assert location != null;
+                String bookId = location.substring(location.lastIndexOf('/') + 1);
+                return session.set("bookId", Integer.parseInt(bookId));
+            })
+            .exec(
+                    http("Get book by id")
+                            .get("/api/v1/books/#{bookId}"),
                     pause(5),
+                    http("Update book by id")
+                            .put("/api/v1/books")
+                            .body(StringBody(session -> {
+                                int bookId = session.getInt("bookId");
+                                return String.format("{\"id\": %d, \"title\": \"Libri Titull\", \"author\": \"test author\", \"year\": 2011, \"stockNr\": 10, \"reservedNr\": 1}", bookId);
+                            })),
+                    pause(8),
                     http("Delete book")
-                            .delete("/api/v1/books/1")
+                            .delete("/api/v1/books/#{bookId}")
             );
 
     {
